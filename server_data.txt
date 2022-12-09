@@ -1,0 +1,3 @@
+Server_IP: aibg22.com:8081
+Username:  Hiperparametri
+Password: #@YyRQt3Fk
