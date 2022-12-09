@@ -1,0 +1,45 @@
+klasa Server
+    polja:
+        Player player
+        NPC npcs
+        Map map
+        Boss boss
+    metode:
+        load_game
+        update_state
+            - Player-u proslediti njegove atribute
+            - NPC-u njegove atribute
+            - Map-i mapu polja
+            - Boss-u
+        return_state
+        
+
+klasa Player
+    polja:
+        dictionary atributes
+    metode:
+        turn - ovde sva logika
+
+
+klasa NPC
+    polja:
+        dictionary atributes
+    metode:
+        get_pos
+
+klasa Map
+    polja:
+        dictionary tiles
+    metode:
+        get_tile_type()
+        get_tile_pos(type="") - na osnovu tipa ("asteroid") vraca poziciju
+
+klasa Boss
+    polja:
+        bool patter1/pattern2
+        pattern2_size
+        pattern1_step
+
+    metode:
+        get_attack_zone - cuva napadnuta polja
+        update_pattern
