@@ -3,7 +3,7 @@ import json
 class Map:
     def __init__(self, _data) -> None:
         self.tiles = _data["tiles"]
-        self.size = data["size"]
+        self.size = _data["size"]
         self.types_to_coords = {}
     
     def update(self, data):
