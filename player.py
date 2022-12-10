@@ -45,9 +45,11 @@ class Player:
 
         return empty_map
 
-    def bfs_path(self, i_start, j_start, i_end, j_end):
+    def bfs_path(self, i_start, j_start, i_end, j_end, asteroids=False):
+        '''Vrsi BFS pretragu i vraca sledeci potez'''
         visited = self.create_empty_map()
         queue = [[(i_start, j_start)]]
+        asteroids = []
 
         delta_i = [0, 1, 1, 0, -1, -1]
         delta_j = [-1, 0, 1, 1, 0, -1]
@@ -60,16 +62,17 @@ class Player:
             if visited[i_cur][j_cur] == 0:
                 for k in range(len(delta_i)):
                     i_next, j_next = i_cur + delta_i[k], j_cur + delta_j[k]
-                    if self.is_valid(i_next, j_next) and visited[i_next][j_next] == 0:
+                    if self.is_valid(i_next, j_next, asteroids, asteroids) and visited[i_next][j_next] == 0:
                         new_path = list(path)
                         new_path.append((i_next, j_next))
                         queue.append(new_path)
                     if i_next == i_end and j_next == j_end:
                         path.append((i_end, j_end))
-                        return path[1] # next move
+                        return path, asteroids # next move
                 visited[i_cur][j_cur] = 1
 
-    def is_valid(self, i, j):
+
+    def is_valid(self, i, j, n_asteroids, asteroids=False):
         # Provera da li su i,j van mape
         if i < 0 or i > 28 or j < 0:
             return False
@@ -78,8 +81,14 @@ class Player:
         if i > 14 and j > 42 - i:
             return False
         # Provera dal su opasna
-        if self.map.get_tile_type(i, j) in ["BOSS", "ASTEROID", "BLACKHOLE"]:
-            return False
+        if asteroids:
+            if self.map.get_tile_type(i, j) == "ASTEROID":
+                asteroids.append(self.map.tiles[i][j]['entity']['health'])
+            if self.map.get_tile_type(i, j) in ["BOSS", "BLACKHOLE"]:
+                return False
+        else:
+            if self.map.get_tile_type(i, j) in ["BOSS", "ASTEROID", "BLACKHOLE"]:
+                return False
         return True
 
     def convert_to_rq(self, i, j):
@@ -89,10 +98,24 @@ class Player:
             return q+14, q+r+14
 
     def turn(self):
+        '''Vraca serveru sledecu akciju'''
         r, q = self.get_position()
-        print(r, q)
         i, j = self.convert_to_ij(r, q)
-        next_i, next_j = self.bfs_path(i, j, 0, 14)
+        path, _ = self.bfs_path(i, j, 10, 10)
+        path_a, asteroids = self.bfs_path(i, j, 10, 10, True)
+
+        print(asteroids)
+        print(len(path))
+        print(len(path_a))
+        next_i, next_j = 0, 0
+        if path < path_a + sum(asteroids)/self.get_power():
+            next_i, next_j = path[1]
+        else:
+            next_i, next_j = path_a[1]
+            if self.map.get_tile_type(next_i, next_j) == "ASTEROID":
+                next_r, next_q = self.convert_to_rq(next_i, next_j)
+                return {"action":"attack,"+str(next_q)+","+str(next_r)}
+
         next_r, next_q = self.convert_to_rq(next_i, next_j)
         turn = {"action":"move," + str(next_q) + "," + str(next_r)}
 
