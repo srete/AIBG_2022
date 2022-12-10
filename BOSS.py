@@ -135,17 +135,17 @@ with open('generated_game_state.pkl', 'rb') as f:
     aaa = {'gameState': game_state}
 
 
-if (name = )
+if __name__ == "__main__":
 
-boss = aaa["gameState"]["boss"]
-print(boss)
-print(len(boss["bossAttackedTiles"]))
-boss1 = Boss(boss)
-print(boss1)
+    boss = aaa["gameState"]["boss"]
+    print(boss)
+    print(len(boss["bossAttackedTiles"]))
+    boss1 = Boss(boss)
+    print(boss1)
 
-print(boss1.pattern2)
-print(boss1.state_of_pattern)
+    #print(boss1.pattern2)
+    #print(boss1.state_of_pattern)
 
-for dic in boss["bossAttackedTiles"]:
-    if(dic["q"] == 1 and dic["r"] == -6):
-        print("aaa")
+    for dic in boss["bossAttackedTiles"]:
+        if(dic["q"] == 1 and dic["r"] == -6):
+            print("aaa")
