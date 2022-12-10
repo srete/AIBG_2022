@@ -34,13 +34,11 @@ class Map:
     def convert_to_rq(self, i, j):
         return [i - 14, j - i]
 
-    def get_tile_type(self, r, q):
+    def get_tile_type(self, i, j):
         ''' Ne sluzi nicemu za sad '''
-        start_r = r + 14
-        start_q = -(14+r)
-        tile = self.tiles[start_r][q-start_q]
+        tile = self.tiles[i][j]
 
-        return tile['tileType']
+        return tile['entity']['type']
 
 
 if __name__ == "__main__":
