@@ -38,7 +38,7 @@ class Server:
             "action":"move,-7,-6"
         }
         start_action_r  = requests.post(url =SERVER_IP + "8081"+"/game/actionTrain",headers = self.token_header, json = action_0)
-        #print(start_action_r.json())
+        print(start_action_r.json())
         start_action = json.loads(start_action_r.json()['gameState'])  # formatiranje
         
         # TODO: Inicijalizuj mapu, Playera itd.... smisleno za pravu igru
@@ -67,12 +67,15 @@ class Server:
 
     def get_state(self) -> None:
         turn = self.player.turn()
+        print(self.player.get_position())
+        print(turn)
         # turn = {
         #     "action":"move,-7,-7"
         # }
     
         new_state_r = requests.post(url =SERVER_IP + "8081"+"/game/actionTrain", headers = self.token_header, json = turn)
-        print('Staaa', new_state_r.json())
+
+        #print('Staaa', new_state_r.json())
         new_state = json.loads(new_state_r.json()['gameState'])  # formatiranje
         
         # Update mape, playera, NPCa i Boss-a
@@ -81,19 +84,23 @@ class Server:
         for idx, p in self.npc.items():
             p.update(new_state[f'player{idx}'])
 
-if __name__ == "__main__":
-    server = Server('test1.txt', 1, 1)
-    server.get_state()
-    
+
     def play_game(self):
-        while(True):
-            self.get_state()
-    
+        while (True):
+            try:
+
+                self.get_state()
+            except KeyError:
+                print("ILEGALAN POTEZ")
+
+if __name__ == "__main__":
+
+    server = Server('test1.txt', 1, 1)
+    server.play_game()
 
 
-server = Server('test1.txt', 1, 1)
+#server = Server('test1.txt', 1, 1)
 #server.get_state()
-server.play_game()
 
 
 #### Try except da stampa greske
