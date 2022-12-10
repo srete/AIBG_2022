@@ -8,7 +8,7 @@ class Player:
         self.data = _data
         self.map = _map
 
-    def update_player(self, new_data, new_map):
+    def update(self, new_data, new_map):
         ''' Updates player atributes'''
         self.data = new_data
         self.map = new_map
@@ -95,8 +95,7 @@ class Player:
                         new_path.append((i_next, j_next))
                         queue.append(new_path)
                     if i_next == i_end and j_next == j_end:
-                        print(path)
-                        return 
+                        return path[1] # next move
                 visited[i_cur][j_cur] = 1
 
     def print_path(self, parent_map, i_end, j_end, i_start, j_start):
@@ -120,13 +119,17 @@ class Player:
         if self.map.get_tile_type(i, j) in ["BOSS", "ASTEROID", "BLACKHOLE"]:
             return False
         return True
-        
+
+    def convert_to_rq(self, i, j):
+        return [i - 14, j - i]
+    
+    def convert_to_ij(self, r, q):
+            return r+14, q+r+14
 
     def turn(self):
-        i_end, j_end = 0, 0
         r, q = self.get_position()
         i, j = self.convert_to_ij(r, q)
-        next_r, next_q = self.convert_to_rq(self.bfs(i, j, i_end, j_end))
+        next_r, next_q = self.convert_to_rq(self.bfs_path(i, j, 14, 14)[0], self.bfs_path(i, j, 14, 14)[1])
         turn = {"action":"move," + str(next_r) + "," + str(next_q)}
 
         return turn
@@ -152,6 +155,7 @@ class Player:
         else:
             return None
 
+
 """
     turn = {
         "action":"move,r,q"
@@ -168,4 +172,4 @@ if __name__ == "__main__":
 
     #print(player.create_empty_map())
     print(map.get_tile_type(26, 10))
-    player.bfs_path(7, 6, 3, 7)
+    print(player.turn())
