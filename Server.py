@@ -128,7 +128,7 @@ class Server:
 
 if __name__ == "__main__":
 
-    server = Server('test1.txt', 1, 0.1)
+    server = Server('test1.txt', 1, 0.5)
     server.play_game()
 
 

@@ -6,7 +6,7 @@ class Boss:
     def __init__(self, boss):
 
         self.boss = boss
-
+        self.position = [{"q":0, "r":0}, {"q":0, "r":-1}, {"q":1, "r":-1}, {"q":-1, "r":0}, {"q":1, "r":0}, {"q":-1, "r":1}, {"q":0, "r":1}]
         self.state_of_pattern1 = 0
         self.state_of_pattern2 = 0
 

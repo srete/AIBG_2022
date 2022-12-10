@@ -8,7 +8,7 @@ class Npc:
         self.npc = npc
 
     def get_position(self):
-        return(self.npc["r"], self.npc["q"])
+        return(self.npc["q"], self.npc["r"])
 
     def get_health(self):
         return(self.npc["health"])
