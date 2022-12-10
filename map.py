@@ -32,7 +32,7 @@ class Map:
         return self.types_to_coords[type]
 
     def convert_to_rq(self, i, j):
-        return [i - 14, j - i]
+        return [j - i, i - 14]
 
     def get_tile_type(self, i, j):
         ''' Ne sluzi nicemu za sad '''

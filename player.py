@@ -121,13 +121,14 @@ class Player:
         return True
 
     def convert_to_rq(self, i, j):
-        return [i - 14, j - i]
+        return [j - i, i - 14]
     
     def convert_to_ij(self, r, q):
-            return r+14, q+r+14
+            return q+14, q+r+14
 
     def turn(self):
         r, q = self.get_position()
+        print(r, q)
         i, j = self.convert_to_ij(r, q)
         next_r, next_q = self.convert_to_rq(self.bfs_path(i, j, 14, 14)[0], self.bfs_path(i, j, 14, 14)[1])
         turn = {"action":"move," + str(next_r) + "," + str(next_q)}
