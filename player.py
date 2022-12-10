@@ -1,12 +1,16 @@
 import json
 from map import Map
 import pickle
+from BOSS import Boss
+from NPC import Npc
 
 class Player:
 
-    def __init__(self, _data, _map:Map) -> None:
-        self.data = _data
-        self.map = _map
+    def __init__(self, _data, _map: Map, _boss: Boss, _other_players: list) -> None:
+            self.data = _data
+            self.map = _map
+            self.boss = _boss
+            self.other_players =_other_players
 
     def update(self, new_data, new_map):
         ''' Updates player atributes'''
@@ -96,6 +100,7 @@ class Player:
         return (j-i, i - 14) if i <= 14 else (j-14, i-14)
     
     def convert_to_ij(self, r, q):
+            ''' return i, j '''
             return (r+14, q+r+14) if r<=0 else (r+14 ,q+14)
 
     def turn(self):
@@ -143,6 +148,106 @@ class Player:
         else:
             return None
 
+    def next_move(self):
+        zone_5 = [{"q": 5, "r": 0}, {"q": 5, "r": -1}, {"q": 5, "r": -2}, {"q": 5, "r": -3}, {"q": 5, "r": -4},
+                  {"q": 5, "r": -5}, {"q": 4, "r": -5}, {"q": 3, "r": -5}, {"q": 2, "r": -5},
+                  {"q": 1, "r": -5}, {"q": 0, "r": -5}, {"q": -1, "r": -4}, {"q": -2, "r": -3}, {"q": -3, "r": -2},
+                  {"q": -4, "r": -1}, {"q": -5, "r": 0}, {"q": -5, "r": 1}, {"q": -5, "r": 2}, {"q": -5, "r": 3},
+                  {"q": -5, "r": 4}
+            , {"q": -5, "r": 5}, {"q": -4, "r": 5}, {"q": -3, "r": 5}, {"q": -2, "r": 5}, {"q": -1, "r": 5},
+                  {"q": 0, "r": 5}, {"q": 1, "r": 4}, {"q": 2, "r": 3}, {"q": 3, "r": 2}, {"q": 4, "r": 1}]
+
+        wormholes = self.map.get_all_tiles_type("WORMHOLE")
+        xp = self.map.get_all_tiles_type("EXPERIENCE")
+        health = self.map.get_all_tiles_type("HEALTH")
+        black_holes = self.map.get_all_tiles_type("BLACK HOLE")
+
+        attack_of_boss = self.boss.boss_next_attack()
+
+        for dic in self.boss.position:
+            if (self.tiles_distance(self.data, dic) <= 3):
+                return {"action": "attack," + str(dic["q"]) + "," + str(dic["r"])}
+
+        zero_position = {"q": 0, "r": 0}
+
+        if (self.tiles_distance(self.data, zero_position) == 5 and self.get_health() > 250):
+            path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]), self.convert_to_ij(0, 0))
+            q, r = self.convert_to_qr(path[1][0], path[1][1])
+            return {"action": "move" + str(q) + "," + str(r)}
+
+        if (self.tiles_distance(self.data, zero_position) == 5 and self.get_health() < 250):
+            distances = []
+
+            for player in self.other_players:
+                if ((self.tiles_distance(self.data, player) <= 3) and (self.get_health() > player.get_health())):
+                    return {"action": "attack" + str(player["q"]) + "," + str(player["r"])}
+
+            for i in range(len(health)):
+                if ((health[i]["q"], health[i]["r"]) not in attack_of_boss):
+                    distances.append(self.tiles_distance(self.data, health[i]))
+                    min = distances[0]
+                    j = 0
+                    for i in range(1, len(distances)):
+                        if (min > distances[i]):
+                            j = i
+                            min = distances[i]
+
+                    path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
+                                         self.convert_to_ij(health[j]["r"], health[j]["q"]))
+                    q, r = self.convert_to_qr(path[1][0], path[1][1])
+                    return {"action": "move" + str(q) + "," + str(r)}
+
+        for player in self.other_players:
+            if ((self.tiles_distance(self.data, player) <= 4) and (player.get_trap_duration() == 2)):
+                path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
+                                     self.convert_to_ij(player["r"], player["q"]))
+                q, r = self.convert_to_qr(path[1][0], path[1][1])
+                return {"action": "move" + str(q) + "," + str(r)}
+
+            if (self.tiles_distance(self.data, player) <= 3):
+                return {"action": "attack" + str(player["q"]) + str(player["r"])}
+
+            if ((self.tiles_distance(self.data, player)) <= 5 and player.get_health() + 300 <= self.get_health()):
+                if ((player["q"], player["r"]) not in attack_of_boss):
+                    path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
+                                         self.convert_to_ij(player["r"], player["q"]))
+                    q, r = self.convert_to_qr(path[1][0], path[1][1])
+                    return {"action": "move" + str(q) + "," + str(r)}
+
+        # proveravanje za wormhole
+        flag = 0
+        for i in range(len(wormholes)):
+            dic = {"q": wormholes[i]["q"], "r": wormholes[i]["r"]}
+            if (self.tiles_distance(self.data, dic) <= 2):
+                for j in range(i + 1, len(wormholes)):
+                    if (wormholes[i]["id"] == wormholes[j]["id"]):
+                        for k in zone_5:
+                            dic1 = {"q": wormholes[j]["q"], "r": wormholes[j]["r"]}
+                            if ((self.tiles_distance(dic1, zone_5) <= 3) and (
+                                    (dic1["q"], dic1["r"]) not in attack_of_boss)):
+                                flag = 1
+                                break
+                    if (flag):
+                        path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
+                                             self.convert_to_ij(wormholes[i]["r"], wormholes[i]["q"]))
+                        q, r = self.convert_to_qr(path[1][0], path[1][1])
+                        return {"action": "move" + str(q) + "," + str(r)}
+
+        distances = []
+        for i in range(len(zone_5)):
+            distances.append(self.tiles_distance(self.data, zone_5[i]))
+        min_distance = distances[0]
+        min_idx = 0
+        for i in range(1, len(distances)):
+            if (min_distance > distances[i]):
+                min_idx = i
+                min_distance = distances[i]
+        path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
+                             self.convert_to_ij(zone_5[min_idx]["r"], zone_5[min_idx]["q"]))
+        q, r = self.convert_to_qr(path[1][0], path[1][1])
+        
+        if ((r, q) not in attack_of_boss):
+            pass
 
 """
     turn = {

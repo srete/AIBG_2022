@@ -5,11 +5,12 @@ import player
 import map
 import NPC
 import time
+import BOSS
 
 # Funkcija koja igra igru
 
 SERVER_IP = "http://aibg22.com:"
-username = "Hiperparametri"
+username = "Hiperparametri1"
 password = "#@YyRQt3Fk"
 
 login_data = {
@@ -33,7 +34,17 @@ class Server:
         * time - trajanje igre u minutima
         '''
         self.__game_init__(map_name, _player_id, time)
-            
+        #print(self.join_game.json())
+        try:
+            start_action = json.loads(self.join_game.json()['gameState'])  # formatiranje
+        except KeyError:
+            print('Start action potez nije uspeo')
+            print(self.join_game.json())
+
+        #start_action = self.join_game.json()['gameState']
+        message = self.join_game.json()['message']
+        print(message)
+        '''
         # Prva akcija
         # TODO: Samo za train slucaj, promeniti za pravu igru
         action_0 = {
@@ -47,11 +58,14 @@ class Server:
         except KeyError:
             print('Start action potez nije uspeo')
             print(start_action_r.json())
-        
+        '''
         # TODO: Inicijalizuj mapu, Playera itd.... smisleno za pravu igru
+        #print(start_action)
         self.map = map.Map(start_action['map'])
-        self.player = player.Player(start_action[f'player{self.player_id}'], self.map)  # Nas player, tj. pobednik :)
         self.npc = {str(idx): NPC.Npc({}) for idx in self.npc_ids} # Gubitniciii
+        other_players = [p for p in self.npc.values()]
+        self.boss = BOSS.Boss(start_action['boss'])
+        self.player = player.Player(start_action[f'player{self.player_id}'], self.map, self.boss, other_players)  # Nas player, tj. pobednik :)
         for idx, p in self.npc.items():
             p.update(start_action[f'player{idx}'])
         #print(self.player.get_position())
@@ -71,10 +85,11 @@ class Server:
             }
             
         self.join_game = requests.post(url =SERVER_IP +"8081" +"/game/train", headers = self.token_header, json = g_params)
-        print(self.join_game.json()['message']) 
+        #print(self.join_game.json()['message']) 
 
     def get_state(self) -> None:
         turn = self.player.turn()
+        #turn = self.player.next_move()
         print(self.player.get_position())
         print(turn)
         # turn = {
@@ -96,10 +111,17 @@ class Server:
 
 
     def play_game(self):
+        # action_0 = {
+        # "action":"move,-7,-6"
+        # }
+        
+        # start_action_r  = requests.post(url =SERVER_IP + "8081"+"/game/actionTrain",headers = self.token_header, json = action_0)
+        # return
+        
         while (True):
             try:
                 self.get_state()
-                time.sleep(15)
+                # time.sleep(5)
             except KeyError:
                 print("ILEGALAN POTEZ")
 
