@@ -14,4 +14,5 @@ print('One tile data:', game_state['gameState']['map']['tiles'][0][0])
 print('Boss data: ', game_state['gameState']['boss'].keys())
 print('Boss action: ', game_state['gameState']['boss']['bossAction'], ', boss AttackedTiles: ', game_state['gameState']['boss']['bossAttackedTiles'])
 
-print('Player scoreBoard data:', game_state['gameState']['scoreBoard']['players'][0].keys())
+print('ScoreBoard:', game_state['gameState']['scoreBoard'].keys())
+print(game_state['gameState']['scoreBoard']['players'][0].keys())
