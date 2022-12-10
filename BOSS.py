@@ -67,7 +67,7 @@ class Boss:
 
         if (self.state_of_pattern1 == 3):
 
-            self.state_of_pattern1 == 0
+            self.state_of_pattern1 = 0
 
             if(self.state_of_pattern2 == 1):
                 index = []
