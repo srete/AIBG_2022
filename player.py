@@ -177,7 +177,7 @@ class Player:
         wormholes = self.map.get_all_tiles_type("WORMHOLE")
         xp = self.map.get_all_tiles_type("EXPERIENCE")
         health = self.map.get_all_tiles_type("HEALTH")
-        black_holes = self.map.get_all_tiles_type("BLACK HOLE")
+        black_holes = self.map.get_all_tiles_type("BLACKHOLE")
 
         attack_of_boss = self.boss.boss_next_attack()
 
@@ -196,8 +196,8 @@ class Player:
             distances = []
 
             for player in self.other_players:
-                if ((self.tiles_distance(self.data, player) <= 3) and (self.get_health() > player.get_health())):
-                    return {"action": "attack" + str(player["q"]) + "," + str(player["r"])}
+                if ((self.tiles_distance(self.data, player.data) <= 3) and (self.get_health() > player.get_health())):
+                    return {"action": "attack" + str(player.data["q"]) + "," + str(player.data["r"])}
 
             for i in range(len(health)):
                 if ((health[i]["q"], health[i]["r"]) not in attack_of_boss):
@@ -215,19 +215,19 @@ class Player:
                     return {"action": "move" + str(q) + "," + str(r)}
 
         for player in self.other_players:
-            if ((self.tiles_distance(self.data, player) <= 4) and (player.get_trap_duration() == 2)):
+            if ((self.tiles_distance(self.data, player.data) <= 4) and (player.get_trap_duration() == 2)):
                 path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
-                                     self.convert_to_ij(player["r"], player["q"]))
+                                     self.convert_to_ij(player.data["r"], player.data["q"]))
                 q, r = self.convert_to_qr(path[1][0], path[1][1])
                 return {"action": "move" + str(q) + "," + str(r)}
 
-            if (self.tiles_distance(self.data, player) <= 3):
-                return {"action": "attack" + str(player["q"]) + str(player["r"])}
+            if (self.tiles_distance(self.data, player.data) <= 3):
+                return {"action": "attack" + str(player.data["q"]) + str(player.data["r"])}
 
-            if ((self.tiles_distance(self.data, player)) <= 5 and player.get_health() + 300 <= self.get_health()):
-                if ((player["q"], player["r"]) not in attack_of_boss):
+            if ((self.tiles_distance(self.data, player.data)) <= 5 and player.get_health() + 300 <= self.get_health()):
+                if ((player.data["q"], player.data["r"]) not in attack_of_boss):
                     path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
-                                         self.convert_to_ij(player["r"], player["q"]))
+                                         self.convert_to_ij(player.data["r"], player.data["q"]))
                     q, r = self.convert_to_qr(path[1][0], path[1][1])
                     return {"action": "move" + str(q) + "," + str(r)}
 
@@ -259,8 +259,9 @@ class Player:
             if (min_distance > distances[i]):
                 min_idx = i
                 min_distance = distances[i]
-        path = self.bfs_path(self.convert_to_ij(self.data["r"], self.data["q"]),
-                             self.convert_to_ij(zone_5[min_idx]["r"], zone_5[min_idx]["q"]))
+        path = self.bfs_path(*self.convert_to_ij(self.data["r"], self.data["q"]),
+                             *self.convert_to_ij(zone_5[min_idx]["r"], zone_5[min_idx]["q"]))
+        print(path)
         q, r = self.convert_to_qr(path[1][0], path[1][1])
         
         if ((r, q) not in attack_of_boss):

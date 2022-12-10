@@ -105,7 +105,8 @@ class Server:
             print(new_state_r.json())
         # Update mape, playera, NPCa i Boss-a
         self.map.update(new_state['map'])
-        self.player.update(new_state[f'player{self.player_id}'], self.map)
+        other_players = [p for p in self.npc.values()]
+        self.player.update(new_state[f'player{self.player_id}'], self.map, self.boss, other_players)
         for idx, p in self.npc.items():
             p.update(new_state[f'player{idx}'])
 
@@ -119,15 +120,15 @@ class Server:
         # return
         
         while (True):
-            try:
-                self.get_state()
+            #try:
+            self.get_state()
                 # time.sleep(5)
-            except KeyError:
-                print("ILEGALAN POTEZ")
+            #except KeyError:
+            print("ILEGALAN POTEZ")
 
 if __name__ == "__main__":
 
-    server = Server('test1.txt', 1, 1)
+    server = Server('test1.txt', 1, 0.1)
     server.play_game()
 
 
