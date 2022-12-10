@@ -33,8 +33,9 @@ class Map:
     def get_all_tiles_type(self, type):
         return self.types_to_coords[type]
 
-    def convert_to_rq(self, i, j):
-        return [j - i, i - 14]
+    def convert_to_qr(self, i, j):
+        '''return q, r'''
+        return (j-i, i - 14) if i <= 14 else (j-14, i-14)
 
     def get_tile_type(self, i, j):
         ''' Ne sluzi nicemu za sad '''

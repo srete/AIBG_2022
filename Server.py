@@ -4,6 +4,7 @@ import json
 import player
 import map
 import NPC
+import time
 
 # Funkcija koja igra igru
 
@@ -32,11 +33,13 @@ class Server:
         * time - trajanje igre u minutima
         '''
         self.__game_init__(map_name, _player_id, time)
+            
         # Prva akcija
         # TODO: Samo za train slucaj, promeniti za pravu igru
         action_0 = {
             "action":"move,-7,-6"
         }
+        
         start_action_r  = requests.post(url =SERVER_IP + "8081"+"/game/actionTrain",headers = self.token_header, json = action_0)
         #print(start_action_r.json())
         try:
@@ -51,6 +54,7 @@ class Server:
         self.npc = {str(idx): NPC.Npc({}) for idx in self.npc_ids} # Gubitniciii
         for idx, p in self.npc.items():
             p.update(start_action[f'player{idx}'])
+        #print(self.player.get_position())
 
     def __game_init__(self,  map_name: str, _player_id: int, time: int):
         # Inicijalizacija igre
@@ -67,7 +71,7 @@ class Server:
             }
             
         self.join_game = requests.post(url =SERVER_IP +"8081" +"/game/train", headers = self.token_header, json = g_params)
-        print(self.join_game.json())
+        print(self.join_game.json()['message']) 
 
     def get_state(self) -> None:
         turn = self.player.turn()
@@ -94,8 +98,8 @@ class Server:
     def play_game(self):
         while (True):
             try:
-
                 self.get_state()
+                time.sleep(15)
             except KeyError:
                 print("ILEGALAN POTEZ")
 

@@ -14,7 +14,7 @@ class Player:
         self.map = new_map
 
     def get_position(self):
-        return(self.data["r"], self.data["q"])
+        return(self.data["q"], self.data["r"])
 
     def get_health(self):
         return(self.data["health"])
@@ -96,11 +96,11 @@ class Player:
         return (j-i, i - 14) if i <= 14 else (j-14, i-14)
     
     def convert_to_ij(self, r, q):
-            return (q+14, q+r+14) if r<=0 else (r+14 ,q+14)
+            return (r+14, q+r+14) if r<=0 else (r+14 ,q+14)
 
     def turn(self):
         '''Vraca serveru sledecu akciju'''
-        r, q = self.get_position()
+        q, r = self.get_position()
         i, j = self.convert_to_ij(r, q)
         path, _ = self.bfs_path(i, j, 10, 10)
         path_a, asteroids = self.bfs_path(i, j, 10, 10, True)
@@ -132,7 +132,7 @@ class Player:
         Prva: 2-4, Druga 5-10, Treca 11-14
         '''  
         # {'r': 0, 'q': 0}
-        r, q = self.get_position()
+        q, r = self.get_position()
         dist = self.tiles_distance({'r': 0, 'q': 0}, {'r': r, 'q': q})
         if dist >= 2 and dist <= 4:
             return 1
