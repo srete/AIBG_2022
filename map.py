@@ -14,7 +14,8 @@ class Map:
     def load_tiles(self):
         ''' Pravi dict po tipovima polja'''
         # TODO: Da li je skupo vremenski?
-
+        
+        self.types_to_coords = {}
         for i, row in enumerate(self.tiles):
             for j, tile in enumerate(row):
                 tile_type = tile['entity']['type']
