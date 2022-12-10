@@ -95,6 +95,7 @@ class Player:
                         new_path.append((i_next, j_next))
                         queue.append(new_path)
                     if i_next == i_end and j_next == j_end:
+                        path.append((i_end, j_end))
                         return path[1] # next move
                 visited[i_cur][j_cur] = 1
 
@@ -130,8 +131,9 @@ class Player:
         r, q = self.get_position()
         print(r, q)
         i, j = self.convert_to_ij(r, q)
-        next_r, next_q = self.convert_to_rq(self.bfs_path(i, j, 14, 14)[0], self.bfs_path(i, j, 14, 14)[1])
-        turn = {"action":"move," + str(next_r) + "," + str(next_q)}
+        next_i, next_j = self.bfs_path(i, j, 0, 14)
+        next_r, next_q = self.convert_to_rq(next_i, next_j)
+        turn = {"action":"move," + str(next_q) + "," + str(next_r)}
 
         return turn
     
@@ -172,5 +174,4 @@ if __name__ == "__main__":
     player = Player(game_state['gameState']['player1'], map)
 
     #print(player.create_empty_map())
-    print(map.get_tile_type(26, 10))
-    print(player.turn())
+    print(player.bfs_path(0, 0, 0, 5))
