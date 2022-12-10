@@ -27,18 +27,3 @@ class Npc:
 
     def get_trap_duration(self):
         return(self.npc["trapDuration"])
-
-
-# with open('player2.json') as json_file:
-#     player2 = json.load(json_file)
-
-# with open('player3.json') as json_file:
-#     player3 = json.load(json_file)
-
-# with open('player4.json') as json_file:
-#     player4 = json.load(json_file)
-
-
-# npc = Npc()
-# npc.update_npc(player2)
-# print(npc.get_trapped())

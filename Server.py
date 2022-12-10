@@ -74,6 +74,6 @@ class Server:
         for idx, p in self.npc.items():
             p.update(new_state[f'player{idx}'])
 
-
-server = Server('test1.txt', 1, 1)
-server.get_state()
+if __name__ == "__main__":
+    server = Server('test1.txt', 1, 1)
+    server.get_state()
