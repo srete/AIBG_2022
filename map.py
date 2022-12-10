@@ -12,6 +12,9 @@ class Map:
         self.load_tiles()
 
     def load_tiles(self):
+        ''' Pravi dict po tipovima polja'''
+        # TODO: Da li je skupo vremenski?
+
         for i, row in enumerate(self.tiles):
             for j, tile in enumerate(row):
                 tile_type = tile['entity']['type']
@@ -31,6 +34,7 @@ class Map:
         return [i - 14, j - i]
 
     def get_tile_type(self, r, q):
+        ''' Ne sluzi nicemu za sad '''
         start_r = r + 14
         start_q = -(14+r)
         tile = self.tiles[start_r][q-start_q]
