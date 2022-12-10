@@ -19,9 +19,11 @@ class Map:
         for i, row in enumerate(self.tiles):
             for j, tile in enumerate(row):
                 tile_type = tile['entity']['type']
-                append_data = self.convert_to_rq(i, j)
+                q, r = self.convert_to_qr(i, j)
+                append_data = {'q': q, 'r': r}
                 if tile_type == "WORMHOLE":
-                    append_data.append(tile['entity']['id'])
+                    append_data['id'] = tile['entity']['id']
+                    #append_data.append(tile['entity']['id'])
                 if tile_type in self.types_to_coords:
                     self.types_to_coords[tile_type].append(append_data)
                 else:

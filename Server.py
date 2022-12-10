@@ -38,8 +38,12 @@ class Server:
             "action":"move,-7,-6"
         }
         start_action_r  = requests.post(url =SERVER_IP + "8081"+"/game/actionTrain",headers = self.token_header, json = action_0)
-        print(start_action_r.json())
-        start_action = json.loads(start_action_r.json()['gameState'])  # formatiranje
+        #print(start_action_r.json())
+        try:
+            start_action = json.loads(start_action_r.json()['gameState'])  # formatiranje
+        except KeyError:
+            print('Start action potez nije uspeo')
+            print(start_action_r.json())
         
         # TODO: Inicijalizuj mapu, Playera itd.... smisleno za pravu igru
         self.map = map.Map(start_action['map'])
@@ -74,10 +78,12 @@ class Server:
         # }
     
         new_state_r = requests.post(url =SERVER_IP + "8081"+"/game/actionTrain", headers = self.token_header, json = turn)
-
-        #print('Staaa', new_state_r.json())
-        new_state = json.loads(new_state_r.json()['gameState'])  # formatiranje
         
+        try:
+            new_state = json.loads(new_state_r.json()['gameState'])  # formatiranje
+        except KeyError:
+            print('Potez nije uspeo')
+            print(new_state_r.json())
         # Update mape, playera, NPCa i Boss-a
         self.map.update(new_state['map'])
         self.player.update(new_state[f'player{self.player_id}'], self.map)

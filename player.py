@@ -91,11 +91,12 @@ class Player:
                 return False
         return True
 
-    def convert_to_rq(self, i, j):
-        return [j - i, i - 14]
+    def convert_to_qr(self, i, j):
+        '''return q, r'''
+        return (j-i, i - 14) if i <= 14 else (j-14, i-14)
     
     def convert_to_ij(self, r, q):
-            return q+14, q+r+14
+            return (q+14, q+r+14) if r<=0 else (r+14 ,q+14)
 
     def turn(self):
         '''Vraca serveru sledecu akciju'''
@@ -105,18 +106,18 @@ class Player:
         path_a, asteroids = self.bfs_path(i, j, 10, 10, True)
 
         print(asteroids)
-        print(len(path))
-        print(len(path_a))
+        #print(len(path))
+        #print(len(path_a))
         next_i, next_j = 0, 0
-        if path < path_a + sum(asteroids)/self.get_power():
+        if len(path) < len(path_a) + sum(asteroids)/self.get_power():
             next_i, next_j = path[1]
         else:
             next_i, next_j = path_a[1]
             if self.map.get_tile_type(next_i, next_j) == "ASTEROID":
-                next_r, next_q = self.convert_to_rq(next_i, next_j)
+                next_q, next_r = self.convert_to_qr(next_i, next_j)
                 return {"action":"attack,"+str(next_q)+","+str(next_r)}
 
-        next_r, next_q = self.convert_to_rq(next_i, next_j)
+        next_q, next_r = self.convert_to_qr(next_i, next_j)
         turn = {"action":"move," + str(next_q) + "," + str(next_r)}
 
         return turn
