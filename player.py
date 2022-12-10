@@ -12,10 +12,12 @@ class Player:
             self.boss = _boss
             self.other_players =_other_players
 
-    def update(self, new_data, new_map):
+    def update(self, new_data, new_map, boss, other_players):
         ''' Updates player atributes'''
         self.data = new_data
         self.map = new_map
+        self.boss = boss
+        self.other_players = other_players
 
     def get_position(self):
         return(self.data["q"], self.data["r"])
@@ -53,7 +55,6 @@ class Player:
         '''Vrsi BFS pretragu i vraca sledeci potez'''
         visited = self.create_empty_map()
         queue = [[(i_start, j_start)]]
-        asteroids = []
 
         delta_i = [0, 1, 1, 0, -1, -1]
         delta_j = [-1, 0, 1, 1, 0, -1]
@@ -66,17 +67,17 @@ class Player:
             if visited[i_cur][j_cur] == 0:
                 for k in range(len(delta_i)):
                     i_next, j_next = i_cur + delta_i[k], j_cur + delta_j[k]
-                    if self.is_valid(i_next, j_next, asteroids, asteroids) and visited[i_next][j_next] == 0:
+                    if self.is_valid(i_next, j_next, asteroids) and visited[i_next][j_next] == 0:
                         new_path = list(path)
                         new_path.append((i_next, j_next))
                         queue.append(new_path)
                     if i_next == i_end and j_next == j_end:
                         path.append((i_end, j_end))
-                        return path, asteroids # next move
+                        return path # next move
                 visited[i_cur][j_cur] = 1
 
 
-    def is_valid(self, i, j, n_asteroids, asteroids=False):
+    def is_valid(self, i, j, asteroids=False):
         # Provera da li su i,j van mape
         if i < 0 or i > 28 or j < 0:
             return False
@@ -86,8 +87,6 @@ class Player:
             return False
         # Provera dal su opasna
         if asteroids:
-            if self.map.get_tile_type(i, j) == "ASTEROID":
-                asteroids.append(self.map.tiles[i][j]['entity']['health'])
             if self.map.get_tile_type(i, j) in ["BOSS", "BLACKHOLE"]:
                 return False
         else:
@@ -103,16 +102,22 @@ class Player:
             ''' return i, j '''
             return (r+14, q+r+14) if r<=0 else (r+14 ,q+14)
 
-    def turn(self):
-        '''Vraca serveru sledecu akciju'''
-        q, r = self.get_position()
-        i, j = self.convert_to_ij(r, q)
-        path, _ = self.bfs_path(i, j, 10, 10)
-        path_a, asteroids = self.bfs_path(i, j, 10, 10, True)
+    def get_asteroids_on_path(self, path):
+        asteroids = []
+        for node in path:
+            i, j = node
+            if self.map.get_tile_type(i, j) == "ASTEROID":
+                asteroids.append(self.map.tiles[i][j]['entity']['health'])
 
-        print(asteroids)
-        #print(len(path))
-        #print(len(path_a))
+        return asteroids
+
+    def bfs(self, i_start, j_start, i_end, j_end):
+
+        path = self.bfs_path(i_start, j_start, i_end, j_end, False)
+        path_a = self.bfs_path(i_start, j_start, i_end, j_end, True)
+
+        asteroids = self.get_asteroids_on_path(path_a)
+
         next_i, next_j = 0, 0
         if len(path) < len(path_a) + sum(asteroids)/self.get_power():
             next_i, next_j = path[1]
@@ -124,6 +129,18 @@ class Player:
 
         next_q, next_r = self.convert_to_qr(next_i, next_j)
         turn = {"action":"move," + str(next_q) + "," + str(next_r)}
+
+        return turn
+
+    def turn(self):
+        '''Vraca serveru sledecu akciju'''
+        q, r = self.get_position()
+        i, j = self.convert_to_ij(r, q)
+        turn = self.bfs(i, j, i_end=14, j_end=10)
+
+        for npc in self.other_players:
+            if self.tiles_distance({"q":npc.get_position()[0], "r":npc.get_position()[1]}, {"q":self.get_position()[0], "r":self.get_position()[1]}) < 3:
+                return {"action":"attack,"+str(npc.get_position()[0])+","+str(npc.get_position()[1])}
 
         return turn
     
