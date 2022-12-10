@@ -6,6 +6,11 @@ class Map:
         self.size = data["size"]
         self.types_to_coords = {}
     
+    def update(self, data):
+        self.tiles = data["tiles"]
+        self.size = data["size"]
+        self.load_tiles()
+
     def load_tiles(self):
         for i, row in enumerate(self.tiles):
             for j, tile in enumerate(row):

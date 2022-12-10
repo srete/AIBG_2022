@@ -19,7 +19,7 @@ header_g = {
 g_params ={
     'mapName':"test1.txt",
     "playerIdx":"1" ,
-    "time":"10"}
+    "time":"1"}
     
 join_game = requests.post(url =SERVER_IP +"8081" +"/game/train",headers = header_g,json = g_params)
 
@@ -36,8 +36,10 @@ print(start_action.json())
 start_action_dict = start_action.json()
 print(type(start_action_dict))
 
-with open('generated_game_state.json', 'w', encoding='utf-8') as f:
-    json.dump(start_action_dict, f)
+# with open('generated_game_state.json', 'w', encoding='utf-8') as f:
+#     json.dump(start_action_dict, f)
 
 with open('generated_game_state.pkl', 'wb') as f:
     pickle.dump(start_action_dict, f)
+
+print(start_action_dict)
