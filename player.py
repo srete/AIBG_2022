@@ -1,5 +1,6 @@
 import json
 from map import Map
+import pickle
 
 class Player:
 
@@ -43,6 +44,9 @@ class Player:
             empty_map.append(new_row)
 
         return empty_map
+    def move_to_center(self):
+        r, q = self.get_position()
+        next_r, next_q = r, q+1
 
     def bfs(self, i_start, j_start, i_end, j_end):
         '''NOT IN USE'''
@@ -126,12 +130,27 @@ class Player:
         turn = {"action":"move," + str(next_r) + "," + str(next_q)}
 
         return turn
-
-    def convert_to_ij(r, q):
-        return [r+14, q+r+14]
-
-    def convert_to_rq(self, i, j):
-        return [i - 14, j - i]
+    
+    def tiles_distance(self, a: dict, b: dict) -> float:
+        return (abs(a['q'] - b['q']) 
+            + abs(a['q'] + a['r'] - b['q'] - b['r'])
+            + abs(a['r'] - b['r'])) / 2
+            
+    def get_zone(self) -> int:
+        '''
+        Prva: 2-4, Druga 5-10, Treca 11-14
+        '''  
+        # {'r': 0, 'q': 0}
+        r, q = self.get_position()
+        dist = self.tiles_distance({'r': 0, 'q': 0}, {'r': r, 'q': q})
+        if dist >= 2 and dist <= 4:
+            return 1
+        if dist >= 5 and dist <= 10:
+            return 2
+        if dist >= 11 and dist <= 14:
+            return 3
+        else:
+            return None
 
 """
     turn = {
