@@ -7,7 +7,7 @@ class Player:
         self.data = _data
         self.map = _map
 
-    def update(self, new_data, new_map):
+    def update_player(self, new_data, new_map):
         ''' Updates player atributes'''
         self.data = new_data
         self.map = new_map

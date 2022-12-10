@@ -80,6 +80,10 @@ class Server:
         self.player.update(new_state[f'player{self.player_id}'], self.map)
         for idx, p in self.npc.items():
             p.update(new_state[f'player{idx}'])
+
+if __name__ == "__main__":
+    server = Server('test1.txt', 1, 1)
+    server.get_state()
     
     def play_game(self):
         while(True):
