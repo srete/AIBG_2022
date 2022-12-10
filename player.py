@@ -35,20 +35,7 @@ class Player:
 
     def move_to_center(self):
         r, q = self.get_position()
-        next_r, next_q = 0, 0
-        if r > 0:
-            next_r = r - 1
-        elif r < 0:
-            next_r = r + 1
-        else:
-            next_r = r
-
-        if q > 0:
-            next_q = q - 1
-        elif q < 0:
-            next_q = q + 1
-        else:
-            next_q = q
+        next_r, next_q = r, q+1
 
         return next_r, next_q
 
