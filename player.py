@@ -44,37 +44,7 @@ class Player:
             empty_map.append(new_row)
 
         return empty_map
-    def move_to_center(self):
-        r, q = self.get_position()
-        next_r, next_q = r, q+1
 
-    def bfs(self, i_start, j_start, i_end, j_end):
-        '''NOT IN USE'''
-        visited = self.create_empty_map()
-        parent_map = {}
-
-        queue = []
-        queue.append([i_start, j_start])
-
-        visited[i_start][j_start] = 1
-        delta_i = [0, 1, 1, 0, -1, -1]
-        delta_j = [-1, 0, 1, 1, 0, -1]
-        while queue:
-
-            pos = queue.pop(0)
-            i_cur, j_cur = pos[0], pos[1]
-
-            for k in range(len(delta_i)):
-                i_next, j_next = i_cur + delta_i[k], j_cur + delta_j[k]
-                if i_next == i_end and j_next == j_end:
-                    parent_map[str(i_next)+str(j_next)] = [i_cur, j_cur]
-                    self.print_path(parent_map, i_end, j_end, i_start, j_start)
-                    return
-                if self.is_valid(i_next, j_next) and visited[i_next][j_next]==0:
-                    queue.append([i_next, j_next])
-                    parent_map[str(i_next)+str(j_next)] = [i_cur, j_cur]
-                    visited[i_next][j_next] = 1
-    
     def bfs_path(self, i_start, j_start, i_end, j_end):
         visited = self.create_empty_map()
         queue = [[(i_start, j_start)]]
@@ -98,15 +68,6 @@ class Player:
                         path.append((i_end, j_end))
                         return path[1] # next move
                 visited[i_cur][j_cur] = 1
-
-    def print_path(self, parent_map, i_end, j_end, i_start, j_start):
-        '''NOT IN USE'''
-        curr = [i_end, j_end]
-        while (curr != None):
-            print(curr)
-            if curr[0] == i_start and curr[1] == j_start:
-                return
-            curr = parent_map[str(curr[0]) + str(curr[1])]
 
     def is_valid(self, i, j):
         # Provera da li su i,j van mape
@@ -161,7 +122,7 @@ class Player:
 
 """
     turn = {
-        "action":"move,r,q"
+        "action":"move,q,r"
     }
 """
 
